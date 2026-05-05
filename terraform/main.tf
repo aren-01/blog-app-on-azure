@@ -121,18 +121,10 @@ resource "azurerm_windows_function_app" "blog_function" {
   }
 
   site_config {
-    application_stack {
-      node_version = "~22"
-    }
-
-    cors {
-      allowed_origins = [
-        azurerm_storage_account.blog_static_site.primary_web_endpoint
-      ]
-
-      support_credentials = false
-    }
+  application_stack {
+    node_version = "~22"
   }
+}
 }
 
 output "website_url" {
