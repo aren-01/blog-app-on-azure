@@ -98,7 +98,20 @@ jobs:
       - name: Terraform Apply
         working-directory: terraform
         run: terraform apply -auto-approve
+        
+      - name: Configure Function App CORS
+        working-directory: terraform
+        run: |
+         WEBSITE_URL=$(terraform output -raw website_url)
 
+         echo "Adding CORS origin: $WEBSITE_URL"
+
+         az functionapp cors add \
+         --resource-group sampleblogapp01 \
+         --name myblogappazure007 \
+         --allowed-origins "$WEBSITE_URL"
+
+      
       - name: Replace API URL in index.html
         working-directory: terraform
         run: |
