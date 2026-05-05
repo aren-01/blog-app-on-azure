@@ -6,7 +6,7 @@ const { Pool } = require("pg");
 const requiredEnvVars = ["DB_HOST", "DB_NAME", "DB_USER", "DB_PASSWORD"];
 const missingEnvVars = requiredEnvVars.filter((key) => !process.env[key]);
 
-// Azure PostgreSQL requires SSL. Keep SSL enabled unless DB_SSL is explicitly set to "false".
+
 const useSsl = process.env.DB_SSL !== "false";
 
 const pool = new Pool({
@@ -34,7 +34,7 @@ app.http("getPosts", {
       "Access-Control-Allow-Headers": "Content-Type",
     };
 
-    // Handle browser CORS preflight requests.
+
     if (request.method === "OPTIONS") {
       return { status: 204, headers };
     }
