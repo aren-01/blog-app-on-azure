@@ -11,9 +11,9 @@ terraform {
 
 provider "azurerm" {
   features {}
+
+  use_oidc = true
 }
-
-
 
 variable "location" {
   description = "Azure region for all resources."
@@ -38,14 +38,10 @@ variable "postgres_admin_password" {
   sensitive   = true
 }
 
-
-
 resource "azurerm_resource_group" "main" {
   name     = "sampleblogapp01"
   location = var.location
 }
-
-
 
 resource "azurerm_storage_account" "blog_static_site" {
   name                     = "myblogappazure007"
@@ -58,8 +54,6 @@ resource "azurerm_storage_account" "blog_static_site" {
     index_document = "index.html"
   }
 }
-
-
 
 resource "azurerm_postgresql_flexible_server" "blog_db" {
   name                = "sampleappblog"
@@ -91,8 +85,6 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "client_ip" {
   end_ip_address   = var.client_ip_address
 }
 
-
-
 resource "azurerm_service_plan" "function_plan" {
   name                = "myblogappazure007-consumption-plan"
   resource_group_name = azurerm_resource_group.main.name
@@ -115,8 +107,8 @@ resource "azurerm_windows_function_app" "blog_function" {
   functions_extension_version = "~4"
 
   app_settings = {
-    AzureWebJobsStorage         = azurerm_storage_account.blog_static_site.primary_connection_string
-    FUNCTIONS_WORKER_RUNTIME    = "node"
+    AzureWebJobsStorage          = azurerm_storage_account.blog_static_site.primary_connection_string
+    FUNCTIONS_WORKER_RUNTIME     = "node"
     WEBSITE_NODE_DEFAULT_VERSION = "~22"
   }
 
@@ -134,8 +126,6 @@ resource "azurerm_windows_function_app" "blog_function" {
     }
   }
 }
-
-
 
 output "website_url" {
   value = azurerm_storage_account.blog_static_site.primary_web_endpoint
