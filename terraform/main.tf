@@ -150,6 +150,10 @@ output "function_app_default_hostname" {
   value = azurerm_windows_function_app.blog_function.default_hostname
 }
 
+output "function_app_url" {
+  value = "https://${azurerm_windows_function_app.blog_function.default_hostname}"
+}
+
 output "postgresql_server_fqdn" {
   value = azurerm_postgresql_flexible_server.blog_db.fqdn
 }
