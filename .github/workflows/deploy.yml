@@ -67,23 +67,22 @@ jobs:
             echo "Terraform state storage account already exists."
           fi
 
-      - name: Grant Terraform state blob access
-        run: |
-          az role assignment create \
-            --assignee "${{ secrets.AZURE_CLIENT_ID }}" \
-            --role "Storage Blob Data Contributor" \
-            --scope "/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/$TF_STATE_RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/$TF_STATE_STORAGE_ACCOUNT" \
-            || true
-
-      - name: Wait for role assignment propagation
-        run: sleep 60
+      
 
       - name: Create Terraform state container
         run: |
-          az storage container create \
-            --name "$TF_STATE_CONTAINER" \
-            --account-name "$TF_STATE_STORAGE_ACCOUNT" \
-            --auth-mode login
+         ACCOUNT_KEY=$(az storage account keys list \
+         --resource-group "$TF_STATE_RESOURCE_GROUP" \
+         --account-name "$TF_STATE_STORAGE_ACCOUNT" \
+         --query '[0].value' \
+         -o tsv)
+
+         echo "ARM_ACCESS_KEY=$ACCOUNT_KEY" >> $GITHUB_ENV
+
+         az storage container create \
+          --name "$TF_STATE_CONTAINER" \
+          --account-name "$TF_STATE_STORAGE_ACCOUNT" \
+          --account-key "$ACCOUNT_KEY"
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
