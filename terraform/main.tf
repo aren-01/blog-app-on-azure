@@ -1,6 +1,14 @@
 terraform {
   required_version = ">= 1.6.0"
 
+  backend "azurerm" {
+    resource_group_name  = "terraform-state-rg"
+    storage_account_name = "tfstatearen007"
+    container_name       = "tfstate"
+    key                  = "blog-app-on-azure.tfstate"
+    use_oidc             = true
+  }
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
