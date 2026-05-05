@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Blog</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Georgia, serif; }
+    body { background: #fafafa; color: #333; height: 100vh; display: flex; flex-direction: column; }
+    header { padding: 30px 40px 20px; border-bottom: 1px solid #e8e8e8; background: white; }
+    header h1 { font-size: 36px; font-weight: normal; margin-bottom: 8px; }
+    header p { color: #777; font-size: 16px; }
+    .container { flex: 1; display: flex; overflow: hidden; }
+    aside { width: 250px; padding: 35px 30px; border-right: 1px solid #ececec; background: #fcfcfc; overflow-y: auto; }
+    aside h2 { font-size: 18px; font-weight: normal; margin-bottom: 20px; color: #666; }
+    aside ul { list-style: none; }
+    aside li { margin-bottom: 18px; }
+    aside a { text-decoration: none; color: #444; border-bottom: 1px solid transparent; transition: 0.2s; cursor: pointer; }
+    aside a:hover { color: black; border-bottom: 1px solid #333; }
+    main { flex: 1; padding: 50px; background: white; overflow-y: auto; }
+    .post { max-width: 700px; }
+    .post h2 { font-size: 32px; font-weight: normal; margin-bottom: 10px; }
+    .post .date { color: #888; margin-bottom: 25px; font-size: 14px; }
+    .post-content { line-height: 1.8; color: #444; }
+    footer { border-top: 1px solid #e8e8e8; padding: 20px; text-align: center; color: #888; background: white; font-size: 14px; }
+    .error-message { color: #b00; padding: 20px; background: #fff0f0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>My Tech Blog</h1>
+    <p>Thoughts, writing, and ideas.</p>
+  </header>
+
+  <div class="container">
+    <aside>
+      <h2>Posts</h2>
+      <ul id="post-list">
+        <li>Loading...</li>
+      </ul>
+    </aside>
+
+    <main id="main-content">
+      <article class="post" id="post-display">
+        <h2 id="display-title">Welcome</h2>
+        <div class="date" id="display-date">Select a post to read</div>
+        <div class="post-content" id="display-text">
+          <p>Please wait while we fetch the latest stories...</p>
+        </div>
+      </article>
+    </main>
+  </div>
+
+  <footer>© My Blog – Aren</footer>
+
+  <script>
+  const API_URL = "__API_URL__";
+
+  const postList = document.getElementById("post-list");
+  const displayTitle = document.getElementById("display-title");
+  const displayText = document.getElementById("display-text");
+  const displayDate = document.getElementById("display-date");
+
+  async function loadPosts() {
+    postList.innerHTML = "<li>Fetching posts...</li>";
+
+    try {
+      console.log("Fetching from:", API_URL);
+
+      const response = await fetch(API_URL, {
+        method: "GET",
+        cache: "no-store"
+      });
+
+      console.log("Response status:", response.status);
+
+      const data = await response.json();
+      console.log("API data:", data);
+
+      if (!response.ok) {
+        throw new Error(data.detail || data.error || "Failed to fetch posts");
+      }
+
+      const posts = data.posts || [];
+
+      if (posts.length === 0) {
+        postList.innerHTML = "<li>No posts found</li>";
+        return;
+      }
+
+      renderSidebar(posts);
+      await loadPostByUrlParameter(posts[0].url_parameter);
+
+    } catch (error) {
+      console.error("Frontend error:", error);
+      postList.innerHTML = `<li>Error: ${error.message}</li>`;
+      displayText.innerHTML = `<p class="error-message">${error.message}</p>`;
+    }
+  }
+
+  function renderSidebar(posts) {
+    postList.innerHTML = "";
+
+    posts.forEach((post) => {
+      const li = document.createElement("li");
+      const link = document.createElement("a");
+
+      link.textContent = post.titles;
+      link.href = `?post=${encodeURIComponent(post.url_parameter)}`;
+
+      link.addEventListener("click", async (event) => {
+        event.preventDefault();
+        window.history.pushState({}, "", link.href);
+        await loadPostByUrlParameter(post.url_parameter);
+      });
+
+      li.appendChild(link);
+      postList.appendChild(li);
+    });
+  }
+
+  async function loadPostByUrlParameter(urlParameter) {
+    try {
+      const response = await fetch(`${API_URL}?url=${encodeURIComponent(urlParameter)}`, {
+        method: "GET",
+        cache: "no-store"
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || data.error || "Post not found");
+      }
+
+      renderPost(data.post);
+
+    } catch (error) {
+      console.error("Post load error:", error);
+      displayText.innerHTML = `<p class="error-message">Could not load post: ${error.message}</p>`;
+    }
+  }
+
+  function renderPost(post) {
+    if (!post) return;
+
+    document.title = `${post.titles} | My Blog`;
+    displayTitle.textContent = post.titles;
+    displayText.innerHTML = post.text || "<p>No content found.</p>";
+    displayDate.textContent = "Published in 2026";
+  }
+
+  window.addEventListener("popstate", () => {
+    const param = new URLSearchParams(window.location.search).get("post");
+    if (param) loadPostByUrlParameter(param);
+  });
+
+  loadPosts();
+</script>
+</body>
+</html>

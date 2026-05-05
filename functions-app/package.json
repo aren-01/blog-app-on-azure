@@ -1,0 +1,18 @@
+{
+  "name": "myblogapp-azure-function",
+  "version": "1.0.0",
+  "description": "Azure Functions Node.js app for blog posts API",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests configured\""
+  },
+  "dependencies": {
+    "@azure/functions": "^4.7.0",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18"
+  }
+}
