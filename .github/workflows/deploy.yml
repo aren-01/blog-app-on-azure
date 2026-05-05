@@ -59,3 +59,31 @@ jobs:
       - name: Terraform Apply
         working-directory: terraform
         run: terraform apply -auto-approve
+
+      - name: Replace API URL in index.html
+        working-directory: terraform
+        run: |
+          API_URL=$(terraform output -raw function_app_url)
+
+          echo "Using API URL: $API_URL"
+
+          cp ../index.html ./index.html
+          sed -i "s|__API_URL__|$API_URL|g" ./index.html
+
+      - name: Upload index.html to Azure Storage static website
+        working-directory: terraform
+        run: |
+          STORAGE_CONNECTION_STRING=$(terraform output -raw storage_connection_string)
+
+          az storage blob upload \
+            --container-name '$web' \
+            --name index.html \
+            --file ./index.html \
+            --connection-string "$STORAGE_CONNECTION_STRING" \
+            --overwrite true
+
+      - name: Show website URL
+        working-directory: terraform
+        run: |
+          echo "Website URL:"
+          terraform output -raw website_url
