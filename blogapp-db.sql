@@ -1,13 +1,11 @@
-
-CREATE TABLE posts (
+CREATE TABLE IF NOT EXISTS posts (
     id SERIAL PRIMARY KEY,
     url_parameter VARCHAR(255),
     titles VARCHAR(255),
     text TEXT
 );
 
-
-INSERT INTO cloud_articles (url_parameter, titles, text) VALUES
+INSERT INTO posts (url_parameter, titles, text) VALUES
 (
     'cloud-computing-basics',
     'Introduction to Cloud Computing',
