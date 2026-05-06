@@ -99,6 +99,23 @@ jobs:
         working-directory: terraform
         run: terraform apply -auto-approve
 
+
+      - name: Seed PostgreSQL Database
+        working-directory: terraform
+        env:
+          
+          PGPASSWORD: ${{ secrets.POSTGRES_ADMIN_PASSWORD }}
+          DB_USER: ${{ secrets.POSTGRES_ADMIN_USERNAME }}
+        
+          DB_NAME: "posts" 
+        run: |
+          DB_HOST=$(terraform output -raw postgresql_server_fqdn)
+          
+          echo "Seeding database $DB_NAME on $DB_HOST..."
+          
+         
+          psql "host=$DB_HOST port=5432 dbname=$DB_NAME user=$DB_USER sslmode=require" -f ../blogapp-db.sql
+
       - name: Configure Function App database environment variables
         working-directory: terraform
         env:
