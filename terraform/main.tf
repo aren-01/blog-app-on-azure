@@ -86,6 +86,13 @@ resource "azurerm_postgresql_flexible_server" "blog_db" {
   zone                         = "1"
 }
 
+resource "azurerm_postgresql_flexible_server_database" "blog_db_name" {
+  name      = "blogdb"
+  server_id = azurerm_postgresql_flexible_server.blog_db.id
+  charset   = "UTF8"
+  collation = "en_US.utf8"
+}
+
 resource "azurerm_postgresql_flexible_server_firewall_rule" "client_ip" {
   name             = "AllowClientIPAddress"
   server_id        = azurerm_postgresql_flexible_server.blog_db.id
