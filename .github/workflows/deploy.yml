@@ -98,6 +98,25 @@ jobs:
       - name: Terraform Apply
         working-directory: terraform
         run: terraform apply -auto-approve
+
+      - name: Configure Function App database environment variables
+        working-directory: terraform
+        env:
+          DB_USER: ${{ secrets.POSTGRES_ADMIN_USERNAME }}
+          DB_PASSWORD: ${{ secrets.POSTGRES_ADMIN_PASSWORD }}
+        run: |
+          DB_HOST=$(terraform output -raw postgresql_server_fqdn)
+
+          az functionapp config appsettings set \
+            --resource-group sampleblogapp01 \
+            --name myblogappazure007 \
+            --settings \
+              DB_HOST="$DB_HOST" \
+              DB_PORT="5432" \
+              DB_NAME="posts" \
+              DB_USER="$DB_USER" \
+              DB_PASSWORD="$DB_PASSWORD" \
+              DB_SSL="true"  
         
       - name: Configure Function App CORS
         working-directory: terraform
