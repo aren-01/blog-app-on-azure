@@ -1,4 +1,4 @@
-name: Manual Terraform Azure Deploy
+name: Azure Deploy
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  terraform:
+  deploy-the-system:
     runs-on: ubuntu-latest
 
     env:
@@ -138,7 +138,8 @@ jobs:
       - name: Configure Function App CORS
         working-directory: terraform
         run: |
-         WEBSITE_URL=$(terraform output -raw website_url)
+         # Get the URL and remove the trailing slash using sed
+         WEBSITE_URL=$(terraform output -raw website_url | sed 's/\/$//')
 
          echo "Adding CORS origin: $WEBSITE_URL"
 
