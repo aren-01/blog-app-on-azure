@@ -134,6 +134,25 @@ jobs:
             --connection-string "$STORAGE_CONNECTION_STRING" \
             --overwrite true
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Function App dependencies
+        working-directory: functions-app
+        run: npm ci
+
+      - name: Build Function App
+        working-directory: functions-app
+        run: npm run build --if-present
+
+      - name: Deploy Node app to Azure Functions
+        uses: Azure/functions-action@v1
+        with:
+          app-name: myblogappazure007
+          package: functions-app      
+
       - name: Show website URL
         working-directory: terraform
         run: |
