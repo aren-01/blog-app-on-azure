@@ -118,7 +118,8 @@ resource "azurerm_windows_function_app" "blog_function" {
     AzureWebJobsStorage          = azurerm_storage_account.blog_static_site.primary_connection_string
     FUNCTIONS_WORKER_RUNTIME     = "node"
     WEBSITE_NODE_DEFAULT_VERSION = "~22"
-  }
+    WEBSITE_RUN_FROM_PACKAGE     = "1"
+}
 
   site_config {
   application_stack {
