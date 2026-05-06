@@ -1,6 +1,8 @@
 ## Azure Architecture
 This is the Azure System I built with Terraform. A serverless page lister, function app, is responsible for page navigation.
-This is connected to PostgreSQL service which stores the texts in the blog. 
+This is connected to PostgreSQL service which stores the texts in the blog.
+
+
 ![](./images/image1.jpg)
 
 ## How to Deploy
