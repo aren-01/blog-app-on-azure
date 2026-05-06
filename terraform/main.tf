@@ -87,7 +87,7 @@ resource "azurerm_postgresql_flexible_server" "blog_db" {
 }
 
 resource "azurerm_postgresql_flexible_server_database" "blog_db_name" {
-  name      = "blogdb"
+  name      = "posts"
   server_id = azurerm_postgresql_flexible_server.blog_db.id
   charset   = "UTF8"
   collation = "en_US.utf8"
