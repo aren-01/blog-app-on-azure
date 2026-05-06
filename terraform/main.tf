@@ -114,11 +114,18 @@ resource "azurerm_windows_function_app" "blog_function" {
 
   functions_extension_version = "~4"
 
-  app_settings = {
-    AzureWebJobsStorage          = azurerm_storage_account.blog_static_site.primary_connection_string
-    FUNCTIONS_WORKER_RUNTIME     = "node"
-    WEBSITE_NODE_DEFAULT_VERSION = "~22"
-    WEBSITE_RUN_FROM_PACKAGE     = "1"
+app_settings = {
+  AzureWebJobsStorage          = azurerm_storage_account.blog_static_site.primary_connection_string
+  FUNCTIONS_WORKER_RUNTIME     = "node"
+  WEBSITE_NODE_DEFAULT_VERSION = "~22"
+  WEBSITE_RUN_FROM_PACKAGE     = "1"
+
+  DB_HOST     = azurerm_postgresql_flexible_server.blog_db.fqdn
+  DB_PORT     = "5432"
+  DB_NAME     = azurerm_postgresql_flexible_server_database.posts.name
+  DB_USER     = var.postgres_admin_username
+  DB_PASSWORD = var.postgres_admin_password
+  DB_SSL      = "true"
 }
 
   site_config {
