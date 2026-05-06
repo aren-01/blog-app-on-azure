@@ -100,6 +100,13 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "client_ip" {
   end_ip_address   = var.client_ip_address
 }
 
+resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_services" {
+  name             = "AllowAzureServices"
+  server_id        = azurerm_postgresql_flexible_server.blog_db.id
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "0.0.0.0"
+}
+
 resource "azurerm_service_plan" "function_plan" {
   name                = "myblogappazure007-consumption-plan"
   resource_group_name = azurerm_resource_group.main.name
